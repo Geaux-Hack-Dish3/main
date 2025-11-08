@@ -23,6 +23,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(primarySwatch: Colors.blue),
       debugShowCheckedModeBanner: false,
       home: const AuthWrapper(), // check if user is logged in
+      routes: {
+      '/home': (context) => const HomePage(),
+      '/login': (context) => const LoginPage(),
+      },
     );
   }
 }
