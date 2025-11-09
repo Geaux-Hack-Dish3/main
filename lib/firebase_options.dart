@@ -41,7 +41,7 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCSzCP6ha0cy6KluzpVGGpwRVp2RKyu4MM',
+    apiKey: 'xxxx',
     appId: '1:1067272827533:web:c8301395267b9101d0e8c4',
     messagingSenderId: '1067272827533',
     projectId: 'photo-quest-c7c59',
@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCW35gmYIb4iPnvVbyGhhOp_uiS2Yv48cI',
+    apiKey: 'xxxx',
     appId: '1:1067272827533:android:db28ca5905ca9445d0e8c4',
     messagingSenderId: '1067272827533',
     projectId: 'photo-quest-c7c59',
@@ -59,7 +59,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyD1oKfG6fbuH5mxehRU0EzbdFWYlyDFlCw',
+    apiKey: 'xxxx',
     appId: '1:1067272827533:ios:11779c4875dd26bdd0e8c4',
     messagingSenderId: '1067272827533',
     projectId: 'photo-quest-c7c59',
@@ -68,7 +68,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyD1oKfG6fbuH5mxehRU0EzbdFWYlyDFlCw',
+    apiKey: 'xxxx',
     appId: '1:1067272827533:ios:11779c4875dd26bdd0e8c4',
     messagingSenderId: '1067272827533',
     projectId: 'photo-quest-c7c59',
@@ -77,7 +77,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyCSzCP6ha0cy6KluzpVGGpwRVp2RKyu4MM',
+    apiKey: 'xxxx',
     appId: '1:1067272827533:web:cd31e4a420c0dc62d0e8c4',
     messagingSenderId: '1067272827533',
     projectId: 'photo-quest-c7c59',
