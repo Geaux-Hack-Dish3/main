@@ -1,14 +1,15 @@
+// A photo someone shared on the community feed
 class FeedPost {
   final String id;
   final String userId;
   final String username;
   final String questId;
   final String questTitle;
-  final String? imageUrl; // Firebase Storage URL
+  final String? imageUrl;
   final DateTime postedAt;
   final int likes;
   final int dislikes;
-  final Map<String, String> votes; // userId -> 'like' or 'dislike'
+  final Map<String, String> votes; // Who voted what on this photo
 
   FeedPost({
     required this.id,

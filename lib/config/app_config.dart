@@ -1,14 +1,14 @@
 class AppConfig {
-  // Backend API URL
+  // Where the server lives (like a website address)
   static const String apiBaseUrl = 'http://localhost:3000/api';
   
-  // API Endpoints
+  // Different places we can ask the server for stuff
   static const String questsEndpoint = '/quests';
   static const String submitPhotoEndpoint = '/submissions';
   static const String leaderboardEndpoint = '/leaderboard';
   static const String userEndpoint = '/users';
   
-  // App Settings
+  // How big photos can be and how many quests per day
   static const int maxPhotoSizeMB = 5;
   static const int dailyQuestLimit = 3;
   

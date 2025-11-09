@@ -2,9 +2,11 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
 import 'dart:typed_data';
 
+// Uploads photos to the cloud
 class FirebaseStorageService {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   
+  // Save a photo to the cloud and get a link to it
   Future<String> uploadPhoto({
     required String userId,
     required String questId,

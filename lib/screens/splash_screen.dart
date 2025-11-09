@@ -3,6 +3,7 @@ import '../services/storage_service.dart';
 import '../services/api_service.dart';
 import 'home_screen.dart';
 
+// The first screen you see when opening the app
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -17,12 +18,12 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeApp();
+    _initializeApp(); // Start loading the app
   }
 
+  // Check if you're logged in and load the app
   Future<void> _initializeApp() async {
-    // Simulate loading time
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2)); // Show splash for 2 seconds
 
     // Check if user exists
     String? userId = await _storageService.getUserId();

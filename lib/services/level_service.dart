@@ -1,4 +1,6 @@
+// Figures out what level you are based on your XP points
 class LevelService {
+  // How many points you need to reach each level
   static const Map<int, int> levelThresholds = {
     1: 0,
     2: 100,
@@ -32,6 +34,7 @@ class LevelService {
     30: 40800,
   };
 
+  // Cool names for each level
   static const Map<int, String> levelTitles = {
     1: 'Outdoor Newbie',
     2: 'Nature Explorer',
@@ -65,8 +68,10 @@ class LevelService {
     30: 'Legendary Explorer',
   };
 
+  // Find out what level you are from your total XP
   static int getLevelFromXP(int totalXP) {
     int level = 1;
+    // Start from level 30 and go down to find your level
     for (int i = 30; i >= 1; i--) {
       if (totalXP >= (levelThresholds[i] ?? 0)) {
         level = i;

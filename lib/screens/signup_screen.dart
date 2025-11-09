@@ -18,6 +18,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final UserService _userService = UserService();
   bool _isLoading = false;
 
+  // Create a new account for you
   Future<void> _signUp() async {
     if (!_formKey.currentState!.validate()) return;
 

@@ -1,3 +1,4 @@
+// A quest is like a mission to take a specific type of photo
 class Quest {
   final String id;
   final String title;

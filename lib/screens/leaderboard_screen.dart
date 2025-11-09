@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../models/leaderboard_entry.dart';
 import '../services/user_service.dart';
 
+// Shows the top players ranked by XP points
 class LeaderboardScreen extends StatefulWidget {
   const LeaderboardScreen({super.key});
 
@@ -18,9 +19,10 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   @override
   void initState() {
     super.initState();
-    _loadLeaderboard();
+    _loadLeaderboard(); // Get the rankings when page opens
   }
 
+  // Get the top 100 players
   Future<void> _loadLeaderboard() async {
     setState(() => _isLoading = true);
     

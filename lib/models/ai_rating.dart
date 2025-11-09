@@ -1,3 +1,4 @@
+// The score and feedback the AI gives your photo
 class AIRating {
   final bool isApproved;
   final bool hasGreenery;

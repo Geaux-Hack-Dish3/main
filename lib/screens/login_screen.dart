@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/user_service.dart';
 
-
+// Page where you type your email and password to log in
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -17,6 +17,7 @@ class _LoginPageState extends State<LoginPage> {
   final UserService _userService = UserService();
   bool _isLoading = false;
 
+  // Try to log you into your account
   Future<void> _login() async {
   print('🔘 Login button pressed!');
   

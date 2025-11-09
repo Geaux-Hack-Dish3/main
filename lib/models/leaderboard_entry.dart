@@ -1,3 +1,4 @@
+// One player's spot on the leaderboard
 class LeaderboardEntry {
   final String userId;
   final String username;

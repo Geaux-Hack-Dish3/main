@@ -9,6 +9,7 @@ class PhotoHistoryService {
   static const int _maxHistoryItems = 100;
   final UserService _userService = UserService();
 
+  // Save a photo you took to your history
   Future<void> saveSubmission(PhotoSubmission submission) async {
     final prefs = await SharedPreferences.getInstance();
     final history = await getHistory();

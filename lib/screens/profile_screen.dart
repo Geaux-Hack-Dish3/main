@@ -4,6 +4,7 @@ import '../services/user_service.dart';
 import '../services/photo_history_service.dart';
 import '../services/quest_service.dart';
 
+// Your profile page showing your stats and achievements
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -27,9 +28,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _loadProfileData();
+    _loadProfileData(); // Get your profile info when page opens
   }
 
+  // Load all your stats and achievements
   Future<void> _loadProfileData() async {
     setState(() => _isLoading = true);
 

@@ -28,6 +28,7 @@ class _CameraScreenState extends State<CameraScreen> {
   Uint8List? _webImage;
   bool _isSubmitting = false;
 
+  // Open camera to take a picture
   Future<void> _takePhoto() async {
     try {
       final XFile? photo = await _picker.pickImage(
@@ -58,6 +59,7 @@ class _CameraScreenState extends State<CameraScreen> {
     }
   }
 
+  // Pick a photo from your phone's pictures
   Future<void> _pickFromGallery() async {
     try {
       final XFile? photo = await _picker.pickImage(
@@ -87,6 +89,7 @@ class _CameraScreenState extends State<CameraScreen> {
     }
   }
 
+  // Send your photo to get scored by AI
   Future<void> _submitPhoto() async {
     if (_imageFile == null && _webImage == null) return;
 

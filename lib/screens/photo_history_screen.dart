@@ -3,6 +3,7 @@ import '../models/photo_history.dart';
 import '../services/photo_history_service.dart';
 import 'package:intl/intl.dart';
 
+// Shows all the photos you've taken
 class PhotoHistoryScreen extends StatefulWidget {
   const PhotoHistoryScreen({super.key});
 
@@ -20,9 +21,10 @@ class _PhotoHistoryScreenState extends State<PhotoHistoryScreen> {
   @override
   void initState() {
     super.initState();
-    _loadHistory();
+    _loadHistory(); // Get all your photos when page opens
   }
 
+  // Load your photo history
   Future<void> _loadHistory() async {
     setState(() => _isLoading = true);
     
@@ -34,6 +36,7 @@ class _PhotoHistoryScreenState extends State<PhotoHistoryScreen> {
     });
   }
 
+  // Show only the photos you want to see (all, approved, or rejected)
   void _applyFilter() {
     if (_filter == 'approved') {
       _filteredHistory = _allHistory.where((s) => s.isApproved).toList();

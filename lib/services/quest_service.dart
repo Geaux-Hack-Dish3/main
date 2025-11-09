@@ -4,12 +4,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../models/quest.dart';
 import 'user_service.dart';
 
+// Manages your daily photo quests and streaks
 class QuestService {
+  // Keys for saving quest info on your phone
   static const String _dailyQuestsKey = 'daily_quests';
   static const String _lastResetDateKey = 'last_reset_date';
   static const String _completedQuestsKey = 'completed_quests';
   final UserService _userService = UserService();
 
+  // All the different quests you might get
   static final List<Map<String, String>> _allQuestTypes = [
     {
       'id': 'green_nature',
@@ -204,6 +207,7 @@ class QuestService {
     return now.subtract(Duration(hours: offset));
   }
 
+  // Check if it's 8 PM and time to reset quests
   Future<bool> checkAndResetDaily() async {
     final prefs = await SharedPreferences.getInstance();
     final lastResetDate = prefs.getString(_lastResetDateKey);
@@ -267,6 +271,7 @@ class QuestService {
     }
   }
 
+  // Get your 3 quests for today
   Future<List<Quest>> getTodaysQuests() async {
     await checkAndResetDaily();
     
@@ -321,6 +326,7 @@ class QuestService {
     return quests;
   }
 
+  // Mark a quest as done
   Future<void> completeQuest(String questId) async {
     final prefs = await SharedPreferences.getInstance();
     final completedIds = prefs.getStringList(_completedQuestsKey) ?? [];

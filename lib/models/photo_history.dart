@@ -1,3 +1,4 @@
+// A photo you took that's saved in your history
 class PhotoSubmission {
   final String id;
   final String userId;
@@ -9,7 +10,7 @@ class PhotoSubmission {
   final bool isOutdoors;
   final String reasoning;
   final int xpEarned;
-  final String? localImagePath; // For local storage
+  final String? localImagePath; // Where the photo is saved on your phone
 
   PhotoSubmission({
     required this.id,

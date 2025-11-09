@@ -3,13 +3,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../models/feed_post.dart';
 import 'user_service.dart';
 
+// Handles sharing photos and voting (like/dislike)
 class FeedService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final UserService _userService = UserService();
 
+  // Points you get or lose from votes
   static const int XP_PER_LIKE = 20;
   static const int XP_PER_DISLIKE = -20;
 
+  // Share your photo with everyone
   Future<String> createPost({
     required String questId,
     required String questTitle,

@@ -1,17 +1,21 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
+// This saves stuff on your phone so you don't lose it
 class StorageService {
+  // Keys are like labels on boxes where we store things
   static const String _userIdKey = 'user_id';
   static const String _usernameKey = 'username';
   static const String _totalXpKey = 'total_xp';
   static const String _questsCompletedKey = 'quests_completed';
   static const String _lastQuestDateKey = 'last_quest_date';
 
+  // Save your ID (like your name tag)
   Future<void> saveUserId(String userId) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_userIdKey, userId);
   }
 
+  // Get your ID back
   Future<String?> getUserId() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_userIdKey);

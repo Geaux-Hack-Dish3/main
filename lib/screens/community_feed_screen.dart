@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../models/feed_post.dart';
 import '../services/feed_service.dart';
 
+// Shows everyone's photos where you can vote with likes/dislikes
 class CommunityFeedScreen extends StatefulWidget {
   const CommunityFeedScreen({super.key});
 
@@ -18,9 +19,10 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
   @override
   void initState() {
     super.initState();
-    _loadFeed();
+    _loadFeed(); // Get all the photos when page opens
   }
 
+  // Load the 50 most recent photos
   Future<void> _loadFeed() async {
     setState(() => _isLoading = true);
     

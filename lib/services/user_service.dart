@@ -1,14 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+// Saves and gets your user info from the cloud
 class UserService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   
+  // Make a new account or update your existing one
   Future<void> createOrUpdateUser(String userId, String username) async {
-    final userDoc = _firestore.collection('users').doc(userId);
-    final docSnapshot = await userDoc.get();
+    final userRef = _firestore.collection('users').doc(userId);
+    final docSnapshot = await userRef.get();
     
     if (!docSnapshot.exists) {
-      await userDoc.set({
+      await userRef.set({
         'userId': userId,
         'username': username,
         'totalXP': 0,
@@ -22,12 +24,13 @@ class UserService {
         'lastActive': FieldValue.serverTimestamp(),
       });
     } else {
-      await userDoc.update({
+      await userRef.update({
         'lastActive': FieldValue.serverTimestamp(),
       });
     }
   }
   
+  // Add points to your total XP
   Future<void> incrementUserXP(String userId, int xpAmount) async {
     final userDoc = _firestore.collection('users').doc(userId);
     

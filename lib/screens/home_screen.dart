@@ -34,8 +34,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _loadData();
-    _checkTutorial();
+    _loadData(); // Get all your info when screen opens
+    _checkTutorial(); // Show tutorial if first time
   }
 
   Future<void> _checkTutorial() async {
@@ -53,10 +53,11 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  // Load all your quests and stats
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
     
-    await _questService.checkAndResetDaily();
+    await _questService.checkAndResetDaily(); // Check if it's time for new quests
     
     final firebaseUser = firebase_auth.FirebaseAuth.instance.currentUser;
     if (firebaseUser != null) {

@@ -8,6 +8,7 @@ import '../models/user.dart';
 import '../models/photo_submission.dart';
 import '../config/app_config.dart';
 
+// Talks to the server to send photos and get data
 class ApiService {
   final String baseUrl;
 

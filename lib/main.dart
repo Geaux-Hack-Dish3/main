@@ -9,6 +9,7 @@ import 'package:photo_quest/screens/statistics_screen.dart';
 import 'firebase_options.dart';
 import 'screens/auth_wrapper.dart';
 
+// This is where the app starts
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(

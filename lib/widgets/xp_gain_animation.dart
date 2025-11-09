@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// Shows the cool animation when you earn XP points
 class XPGainAnimation extends StatefulWidget {
   final int xpGained;
   final VoidCallback? onComplete;
@@ -24,12 +25,13 @@ class _XPGainAnimationState extends State<XPGainAnimation>
   @override
   void initState() {
     super.initState();
+    // Start the animation that makes XP float up and fade away
     _controller = AnimationController(
       duration: const Duration(milliseconds: 2000),
       vsync: this,
     );
 
-    // Slide up animation
+    // Make it slide upward
     _slideAnimation = Tween<double>(
       begin: 0,
       end: -100,

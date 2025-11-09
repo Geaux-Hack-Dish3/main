@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/photo_history_service.dart';
 import '../services/quest_service.dart';
 
+// Shows cool charts and numbers about your progress
 class StatisticsScreen extends StatefulWidget {
   const StatisticsScreen({super.key});
 
@@ -19,9 +20,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   @override
   void initState() {
     super.initState();
-    _loadStatistics();
+    _loadStatistics(); // Get all the stats when page opens
   }
 
+  // Calculate all your stats and numbers
   Future<void> _loadStatistics() async {
     setState(() => _isLoading = true);
     

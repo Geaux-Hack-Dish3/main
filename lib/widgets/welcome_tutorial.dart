@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+// Shows the welcome tutorial when you first open the app
 class WelcomeTutorial extends StatefulWidget {
   const WelcomeTutorial({super.key});
 
@@ -12,6 +13,7 @@ class _WelcomeTutorialState extends State<WelcomeTutorial> {
   int _currentPage = 0;
   final PageController _pageController = PageController();
 
+  // The 4 welcome screens explaining how the app works
   final List<Map<String, dynamic>> _pages = [
     {
       'icon': '🌳',

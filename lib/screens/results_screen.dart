@@ -41,7 +41,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
   @override
   void initState() {
     super.initState();
-    _saveToHistory();
+    _saveToHistory(); // Save this photo to your history
   }
 
   Future<void> _saveToHistory() async {
@@ -339,6 +339,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
     );
   }
 
+  // Check if you went up a level
   void _checkLevelUp(int oldXP, int newXP) {
     final oldLevel = LevelService.getLevelFromXP(oldXP);
     final newLevel = LevelService.getLevelFromXP(newXP);
