@@ -180,9 +180,8 @@ class _PhotoHistoryScreenState extends State<PhotoHistoryScreen> {
                   size: 36,
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 12),
               
-              // Details
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,13 +1,15 @@
 import 'dart:math';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../models/quest.dart';
+import 'user_service.dart';
 
 class QuestService {
   static const String _dailyQuestsKey = 'daily_quests';
   static const String _lastResetDateKey = 'last_reset_date';
   static const String _completedQuestsKey = 'completed_quests';
+  final UserService _userService = UserService();
 
-  // All available quest types - outdoor photo challenges
   static final List<Map<String, String>> _allQuestTypes = [
     {
       'id': 'green_nature',
@@ -186,37 +188,28 @@ class QuestService {
     },
   ];
 
-  // Get Eastern Time with proper DST handling
   DateTime _getEasternTime() {
     final now = DateTime.now().toUtc();
-    // Eastern Time is UTC-5 (EST) or UTC-4 (EDT)
-    // DST runs from 2nd Sunday in March to 1st Sunday in November
     final year = now.year;
     
-    // Calculate DST start (2nd Sunday in March at 2 AM)
     final marchFirst = DateTime.utc(year, 3, 1);
     final dstStart = DateTime.utc(year, 3, 8 + (7 - marchFirst.weekday) % 7 + 7, 2);
     
-    // Calculate DST end (1st Sunday in November at 2 AM)
     final novemberFirst = DateTime.utc(year, 11, 1);
     final dstEnd = DateTime.utc(year, 11, 1 + (7 - novemberFirst.weekday) % 7, 2);
     
-    // Check if we're in DST period
     final isDST = now.isAfter(dstStart) && now.isBefore(dstEnd);
-    final offset = isDST ? 4 : 5; // EDT = UTC-4, EST = UTC-5
+    final offset = isDST ? 4 : 5;
     
     return now.subtract(Duration(hours: offset));
   }
 
-  // Check if quests need to reset (8:00 PM Eastern Time daily)
   Future<bool> checkAndResetDaily() async {
     final prefs = await SharedPreferences.getInstance();
     final lastResetDate = prefs.getString(_lastResetDateKey);
     
-    // Get current date in Eastern Time, adjusted for 8 PM reset
     final easternTime = _getEasternTime();
     
-    // If before 8 PM, use previous day's date for quest consistency
     final adjustedTime = easternTime.hour < 20 
         ? easternTime.subtract(const Duration(days: 1))
         : easternTime;
@@ -224,63 +217,89 @@ class QuestService {
     final today = '${adjustedTime.year}-${adjustedTime.month.toString().padLeft(2, '0')}-${adjustedTime.day.toString().padLeft(2, '0')}';
     
     if (lastResetDate != today) {
-      // Time to reset! Generate new quests
       await _generateDailyQuests();
       await prefs.setString(_lastResetDateKey, today);
-      await prefs.remove(_completedQuestsKey); // Clear completed quests
+      await prefs.remove(_completedQuestsKey);
+      
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        try {
+          await _userService.updateCompletedQuests(currentUser.uid, []);
+        } catch (e) {
+          print('Error clearing completed quests in Firestore: $e');
+        }
+      }
+      
       return true;
     }
     
     return false;
   }
 
-  // Generate 3 random unique quests for the day
   Future<void> _generateDailyQuests() async {
     final prefs = await SharedPreferences.getInstance();
     
-    // Get yesterday's quests to avoid repetition
     final previousQuestIds = prefs.getStringList(_dailyQuestsKey) ?? [];
     
-    // Filter out yesterday's quests
     final availableQuests = _allQuestTypes
         .where((q) => !previousQuestIds.contains(q['id']))
         .toList();
     
-    // If we filtered out too many, just use all quests
     final questPool = availableQuests.length >= 3 ? availableQuests : _allQuestTypes;
     
-    // Use date-based seed so all users get the same quests for the day
     final easternTime = _getEasternTime();
-    // Create unique seed: year + dayOfYear to avoid collisions
     final dayOfYear = easternTime.difference(DateTime(easternTime.year, 1, 1)).inDays;
     final seed = easternTime.year * 1000 + dayOfYear;
     
-    // Shuffle with seeded random and pick 3
     final shuffled = List<Map<String, String>>.from(questPool)..shuffle(Random(seed));
     final selectedQuests = shuffled.take(3).toList();
     
-    // Save quest IDs
     final questIds = selectedQuests.map((q) => q['id']!).toList();
     await prefs.setStringList(_dailyQuestsKey, questIds);
+    
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      try {
+        await _userService.updateDailyQuests(currentUser.uid, questIds);
+      } catch (e) {
+        print('Error syncing daily quests to Firestore: $e');
+      }
+    }
   }
 
-  // Get today's quests
   Future<List<Quest>> getTodaysQuests() async {
-    await checkAndResetDaily(); // Always check for reset first
+    await checkAndResetDaily();
     
+    final currentUser = FirebaseAuth.instance.currentUser;
     final prefs = await SharedPreferences.getInstance();
-    final questIds = prefs.getStringList(_dailyQuestsKey) ?? [];
     
-    if (questIds.isEmpty) {
-      // First time, generate quests
-      await _generateDailyQuests();
-      return getTodaysQuests(); // Recursive call to get the new quests
+    List<String> questIds = [];
+    List<String> completedIds = [];
+    
+    if (currentUser != null) {
+      try {
+        final userData = await _userService.getUserStats(currentUser.uid);
+        if (userData != null && userData['dailyQuests'] != null) {
+          questIds = List<String>.from(userData['dailyQuests'] ?? []);
+          completedIds = List<String>.from(userData['completedQuestsToday'] ?? []);
+        }
+      } catch (e) {
+        print('Error fetching from Firestore: $e');
+      }
     }
     
-    // Get completed quest IDs
-    final completedIds = prefs.getStringList(_completedQuestsKey) ?? [];
+    if (questIds.isEmpty) {
+      questIds = prefs.getStringList(_dailyQuestsKey) ?? [];
+    }
+    if (completedIds.isEmpty) {
+      completedIds = prefs.getStringList(_completedQuestsKey) ?? [];
+    }
     
-    // Build Quest objects
+    if (questIds.isEmpty) {
+      await _generateDailyQuests();
+      return getTodaysQuests();
+    }
+    
     final quests = <Quest>[];
     for (int i = 0; i < questIds.length; i++) {
       final questData = _allQuestTypes.firstWhere(
@@ -302,7 +321,6 @@ class QuestService {
     return quests;
   }
 
-  // Mark a quest as completed
   Future<void> completeQuest(String questId) async {
     final prefs = await SharedPreferences.getInstance();
     final completedIds = prefs.getStringList(_completedQuestsKey) ?? [];
@@ -310,37 +328,41 @@ class QuestService {
     if (!completedIds.contains(questId)) {
       completedIds.add(questId);
       await prefs.setStringList(_completedQuestsKey, completedIds);
+      
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        try {
+          await _userService.updateCompletedQuests(currentUser.uid, completedIds);
+        } catch (e) {
+          print('Error syncing completed quest to Firestore: $e');
+        }
+      }
     }
   }
 
-  // Get time until next reset (8:00 PM Eastern Time)
   Duration getTimeUntilReset() {
     final now = DateTime.now().toUtc();
     final easternTime = _getEasternTime();
     
-    // Calculate next 8:00 PM Eastern
     var nextReset = DateTime(
       easternTime.year,
       easternTime.month,
       easternTime.day,
-      20, 0, 0, // 8:00 PM
+      20, 0, 0,
     );
     
-    // If it's already past 8 PM today, set to tomorrow at 8 PM
     if (easternTime.hour >= 20) {
       nextReset = nextReset.add(const Duration(days: 1));
     }
     
-    // Calculate offset back to UTC (DST-aware)
     final isDST = now.isAfter(DateTime.utc(now.year, 3, 8 + (7 - DateTime.utc(now.year, 3, 1).weekday) % 7 + 7, 2)) &&
                   now.isBefore(DateTime.utc(now.year, 11, 1 + (7 - DateTime.utc(now.year, 11, 1).weekday) % 7, 2));
     final offset = isDST ? 4 : 5;
     
-    final resetTime = nextReset.add(Duration(hours: offset)); // Convert back to UTC
+    final resetTime = nextReset.add(Duration(hours: offset));
     return resetTime.difference(now);
   }
 
-  // Get formatted time until reset
   String getTimeUntilResetFormatted() {
     final duration = getTimeUntilReset();
     final hours = duration.inHours;
@@ -349,18 +371,28 @@ class QuestService {
     return '${hours}h ${minutes}m';
   }
 
-  // Calculate current streak (days in a row with at least 1 quest completed)
   Future<int> getCurrentStreak() async {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    
+    if (currentUser != null) {
+      try {
+        final userData = await _userService.getUserStats(currentUser.uid);
+        if (userData != null && userData['currentStreak'] != null) {
+          return userData['currentStreak'] as int;
+        }
+      } catch (e) {
+        print('Error fetching streak from Firestore: $e');
+      }
+    }
+    
     final prefs = await SharedPreferences.getInstance();
     
-    // Get last activity date
     final lastActivityStr = prefs.getString('last_activity_date');
     if (lastActivityStr == null) return 0;
     
     final lastActivity = DateTime.parse(lastActivityStr);
     final easternNow = _getEasternTime();
     
-    // Adjust for 8 PM reset time
     final adjustedNow = easternNow.hour < 20 
         ? easternNow.subtract(const Duration(days: 1)) 
         : easternNow;
@@ -371,7 +403,6 @@ class QuestService {
     
     final daysSince = adjustedNow.difference(adjustedLastActivity).inDays;
     
-    // If more than 1 day gap, streak is broken
     if (daysSince > 1) {
       await prefs.setInt('current_streak', 0);
       return 0;
@@ -380,46 +411,52 @@ class QuestService {
     return prefs.getInt('current_streak') ?? 0;
   }
 
-  // Update streak when a quest is completed
   Future<void> updateStreak() async {
     final prefs = await SharedPreferences.getInstance();
     final now = DateTime.now().toUtc();
     final easternNow = now.subtract(const Duration(hours: 5));
     
     final lastActivityStr = prefs.getString('last_activity_date');
+    int newStreak = 1;
     
     if (lastActivityStr == null) {
-      // First activity
-      await prefs.setInt('current_streak', 1);
-      await prefs.setString('last_activity_date', easternNow.toIso8601String());
-      return;
-    }
-    
-    final lastActivity = DateTime.parse(lastActivityStr);
-    
-    // Adjust for 8 PM reset
-    final adjustedNow = easternNow.hour < 20
-        ? easternNow.subtract(const Duration(days: 1))
-        : easternNow;
-    
-    final adjustedLastActivity = lastActivity.hour < 20
-        ? lastActivity.subtract(const Duration(days: 1))
-        : lastActivity;
-    
-    final daysSince = adjustedNow.difference(adjustedLastActivity).inDays;
-    
-    if (daysSince == 0) {
-      // Same day, don't update streak
-      return;
-    } else if (daysSince == 1) {
-      // Consecutive day, increment streak
-      final currentStreak = prefs.getInt('current_streak') ?? 0;
-      await prefs.setInt('current_streak', currentStreak + 1);
+      newStreak = 1;
+      await prefs.setInt('current_streak', newStreak);
       await prefs.setString('last_activity_date', easternNow.toIso8601String());
     } else {
-      // Streak broken, reset to 1
-      await prefs.setInt('current_streak', 1);
-      await prefs.setString('last_activity_date', easternNow.toIso8601String());
+      final lastActivity = DateTime.parse(lastActivityStr);
+      
+      final adjustedNow = easternNow.hour < 20
+          ? easternNow.subtract(const Duration(days: 1))
+          : easternNow;
+      
+      final adjustedLastActivity = lastActivity.hour < 20
+          ? lastActivity.subtract(const Duration(days: 1))
+          : lastActivity;
+      
+      final daysSince = adjustedNow.difference(adjustedLastActivity).inDays;
+      
+      if (daysSince == 0) {
+        return;
+      } else if (daysSince == 1) {
+        final currentStreak = prefs.getInt('current_streak') ?? 0;
+        newStreak = currentStreak + 1;
+        await prefs.setInt('current_streak', newStreak);
+        await prefs.setString('last_activity_date', easternNow.toIso8601String());
+      } else {
+        newStreak = 1;
+        await prefs.setInt('current_streak', newStreak);
+        await prefs.setString('last_activity_date', easternNow.toIso8601String());
+      }
+    }
+    
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser != null) {
+      try {
+        await _userService.updateStreak(currentUser.uid, newStreak);
+      } catch (e) {
+        print('Error syncing streak to Firestore: $e');
+      }
     }
   }
 }

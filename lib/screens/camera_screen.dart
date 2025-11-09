@@ -24,8 +24,8 @@ class _CameraScreenState extends State<CameraScreen> {
   final StorageService _storageService = StorageService();
   
   File? _imageFile;
-  XFile? _pickedFile; // For web support
-  Uint8List? _webImage; // For web image display
+  XFile? _pickedFile;
+  Uint8List? _webImage;
   bool _isSubmitting = false;
 
   Future<void> _takePhoto() async {
@@ -39,13 +39,11 @@ class _CameraScreenState extends State<CameraScreen> {
       if (photo != null) {
         _pickedFile = photo;
         if (kIsWeb) {
-          // For web, read as bytes
           final bytes = await photo.readAsBytes();
           setState(() {
             _webImage = bytes;
           });
         } else {
-          // For mobile/desktop
           setState(() {
             _imageFile = File(photo.path);
           });
@@ -70,13 +68,11 @@ class _CameraScreenState extends State<CameraScreen> {
       if (photo != null) {
         _pickedFile = photo;
         if (kIsWeb) {
-          // For web, read as bytes
           final bytes = await photo.readAsBytes();
           setState(() {
             _webImage = bytes;
           });
         } else {
-          // For mobile/desktop
           setState(() {
             _imageFile = File(photo.path);
           });
@@ -97,30 +93,26 @@ class _CameraScreenState extends State<CameraScreen> {
     setState(() => _isSubmitting = true);
 
     try {
-      // Get Firebase user ID
       final currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser == null) {
         throw Exception('User not logged in');
       }
       final userId = currentUser.uid;
 
-      // Submit photo - pass XFile for web compatibility
       final rating = await _apiService.submitPhoto(
         userId: userId,
         questId: widget.quest.id,
         photoFile: kIsWeb ? null : _imageFile,
-        xFile: _pickedFile, // Works for both web and mobile
+        xFile: _pickedFile,
       );
 
       if (rating != null && mounted) {
-        // Update local XP
         final currentXp = await _storageService.getTotalXp();
         await _storageService.saveTotalXp(currentXp + rating.xpEarned);
         
         final questsCompleted = await _storageService.getQuestsCompleted();
         await _storageService.saveQuestsCompleted(questsCompleted + 1);
 
-        // Navigate to results screen
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -161,7 +153,6 @@ class _CameraScreenState extends State<CameraScreen> {
       ),
       body: Column(
         children: [
-          // Quest Info Banner
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
@@ -189,7 +180,6 @@ class _CameraScreenState extends State<CameraScreen> {
             ),
           ),
 
-          // Photo Preview or Placeholder
           Expanded(
             child: (_imageFile != null || _webImage != null)
                 ? Stack(
@@ -245,7 +235,6 @@ class _CameraScreenState extends State<CameraScreen> {
                   ),
           ),
 
-          // Action Buttons
           Container(
             padding: const EdgeInsets.all(16),
             child: (_imageFile == null && _webImage == null)

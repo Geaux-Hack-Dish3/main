@@ -39,7 +39,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _checkTutorial() async {
-    // Show tutorial on first launch
     final showTutorial = await shouldShowTutorial();
     if (showTutorial && mounted) {
       Future.delayed(const Duration(milliseconds: 500), () {
@@ -57,14 +56,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
     
-    // Check and reset daily quests if needed
     await _questService.checkAndResetDaily();
     
-    // Load Firebase user data
     final firebaseUser = firebase_auth.FirebaseAuth.instance.currentUser;
     if (firebaseUser != null) {
       try {
-        // Get user stats from Firestore
         final userDoc = await _userService.getUserStats(firebaseUser.uid);
         _totalXP = userDoc?['totalXP'] ?? 0;
         _questsCompleted = userDoc?['questsCompleted'] ?? 0;
@@ -73,13 +69,10 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
     
-    // Calculate streak
     _currentStreak = await _questService.getCurrentStreak();
     
-    // Load today's 3 quests
     _todayQuests = await _questService.getTodaysQuests();
     
-    // Count how many quests completed today
     _completedTodayCount = _todayQuests.where((q) => q.isCompleted).length;
     
     setState(() => _isLoading = false);
@@ -93,7 +86,6 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Colors.green.shade700,
         foregroundColor: Colors.white,
         actions: [
-          // Profile Button - Quick access to user profile
           IconButton(
             icon: Stack(
               children: [
@@ -192,11 +184,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       _buildCommunityFeedButton(),
                       const SizedBox(height: 20),
                       
-                      // Today's Quests Header
                       _buildQuestsHeader(),
                       const SizedBox(height: 16),
                       
-                      // Display 3 quests
                       ..._todayQuests.map((quest) => Padding(
                         padding: const EdgeInsets.only(bottom: 16),
                         child: _buildQuestCard(quest),
@@ -213,7 +203,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final firebaseUser = firebase_auth.FirebaseAuth.instance.currentUser;
     final displayName = firebaseUser?.displayName ?? 'Guest';
     
-    // Calculate level and progress
     final currentLevel = LevelService.getLevelFromXP(_totalXP);
     final levelTitle = LevelService.getLevelTitle(currentLevel);
     final levelProgress = LevelService.getLevelProgress(_totalXP);
@@ -226,7 +215,6 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            // User Avatar and Name
             Row(
               children: [
                 CircleAvatar(
@@ -293,9 +281,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             
-            // Stats Row
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -305,7 +292,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
             
-            // Today's Progress
             const SizedBox(height: 20),
             Container(
               padding: const EdgeInsets.all(12),
@@ -515,7 +501,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               }
             : () async {
-                // Check if quest already has an approved submission
                 final hasSubmission = await _historyService.hasApprovedSubmissionForQuest(quest.id);
                 
                 if (hasSubmission) {
@@ -525,7 +510,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       backgroundColor: Colors.orange.shade700,
                     ),
                   );
-                  // Mark as completed and reload
                   await _questService.completeQuest(quest.id);
                   _loadData();
                   return;
@@ -539,7 +523,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
 
                 if (result == true) {
-                  // Reload data to check completion status
                   _loadData();
                 }
               },

@@ -5,8 +5,6 @@ import 'dart:typed_data';
 class FirebaseStorageService {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   
-  /// Upload a photo to Firebase Storage and return the download URL
-  /// Supports both mobile (File) and web (Uint8List) uploads
   Future<String> uploadPhoto({
     required String userId,
     required String questId,
@@ -14,15 +12,12 @@ class FirebaseStorageService {
     Uint8List? webImageBytes,
   }) async {
     try {
-      // Create unique filename with timestamp
       final timestamp = DateTime.now().millisecondsSinceEpoch;
       final path = 'quest_photos/$userId/${questId}_$timestamp.jpg';
       print('📤 Uploading to path: $path');
       final ref = _storage.ref().child(path);
       
-      // Upload based on platform
       if (webImageBytes != null) {
-        // Web platform
         print('   Platform: WEB (using Uint8List)');
         print('   Image size: ${webImageBytes.length} bytes');
         await ref.putData(
@@ -31,7 +26,6 @@ class FirebaseStorageService {
         );
         print('   Upload complete!');
       } else if (photoFile != null) {
-        // Mobile platform
         print('   Platform: MOBILE (using File)');
         await ref.putFile(
           photoFile,
@@ -42,7 +36,6 @@ class FirebaseStorageService {
         throw Exception('No photo data provided');
       }
       
-      // Get and return download URL
       print('   Getting download URL...');
       final downloadUrl = await ref.getDownloadURL();
       print('   Download URL obtained: $downloadUrl');
@@ -60,7 +53,6 @@ class FirebaseStorageService {
     }
   }
   
-  /// Delete a photo from Firebase Storage
   Future<void> deletePhoto(String photoUrl) async {
     try {
       final ref = _storage.refFromURL(photoUrl);

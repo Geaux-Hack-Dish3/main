@@ -13,7 +13,6 @@ class ApiService {
 
   ApiService({this.baseUrl = AppConfig.apiBaseUrl});
 
-  // Get today's active quest
   Future<Quest?> getTodayQuest() async {
     try {
       final response = await http.get(
@@ -33,7 +32,6 @@ class ApiService {
     }
   }
 
-  // Get all available quests
   Future<List<Quest>> getQuests() async {
     try {
       final response = await http.get(
@@ -53,7 +51,6 @@ class ApiService {
     }
   }
 
-  // Submit photo for AI rating (web-compatible)
   Future<AIRating?> submitPhoto({
     required String userId,
     required String questId,
@@ -61,7 +58,6 @@ class ApiService {
     dynamic xFile, // XFile for web support
   }) async {
     try {
-      // Read photo bytes
       List<int> photoBytes;
       String filename;
       
@@ -80,11 +76,9 @@ class ApiService {
         Uri.parse('$baseUrl${AppConfig.submitPhotoEndpoint}'),
       );
 
-      // Add fields
       request.fields['userId'] = userId;
       request.fields['questId'] = questId;
 
-      // Add photo file - use fromBytes for web compatibility
       request.files.add(
         http.MultipartFile.fromBytes(
           'photo',
@@ -119,7 +113,6 @@ class ApiService {
     }
   }
 
-  // Get leaderboard
   Future<List<LeaderboardEntry>> getLeaderboard({int limit = 100}) async {
     try {
       final response = await http.get(
@@ -139,7 +132,6 @@ class ApiService {
     }
   }
 
-  // Get user profile
   Future<User?> getUser(String userId) async {
     try {
       final response = await http.get(
@@ -159,7 +151,6 @@ class ApiService {
     }
   }
 
-  // Get recent photo submissions for community voting
   Future<List<PhotoSubmission>> getRecentSubmissions({
     int limit = 20,
     String? excludeUserId,
@@ -185,7 +176,6 @@ class ApiService {
     }
   }
 
-  // Vote on a photo (like or dislike)
   Future<bool> voteOnPhoto({
     required String photoId,
     required String userId,
@@ -214,7 +204,6 @@ class ApiService {
     }
   }
 
-  // Remove vote from a photo
   Future<bool> removeVote({
     required String photoId,
     required String userId,
@@ -236,7 +225,6 @@ class ApiService {
     }
   }
 
-  // Create or register a new user
   Future<User?> registerUser({
     required String username,
     required String email,

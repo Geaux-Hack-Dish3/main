@@ -1,6 +1,6 @@
 class AppConfig {
-  // TODO: Replace with your actual backend API URL
-  static const String apiBaseUrl = 'http://localhost:3000/api'; // Change this to your backend URL
+  // Backend API URL
+  static const String apiBaseUrl = 'http://localhost:3000/api';
   
   // API Endpoints
   static const String questsEndpoint = '/quests';

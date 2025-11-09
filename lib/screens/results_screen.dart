@@ -45,7 +45,6 @@ class _ResultsScreenState extends State<ResultsScreen> {
   }
 
   Future<void> _saveToHistory() async {
-    // Get current Firebase user
     final currentUser = FirebaseAuth.instance.currentUser;
     final userId = currentUser?.uid ?? 'local_user';
     final username = currentUser?.displayName ?? 'Anonymous';
@@ -66,38 +65,28 @@ class _ResultsScreenState extends State<ResultsScreen> {
     
     await _historyService.saveSubmission(submission);
     
-    // If photo was approved, mark quest as completed and update Firestore
     if (widget.rating.isApproved) {
       await _questService.completeQuest(widget.quest.id);
       
-      // Update streak
       await _questService.updateStreak();
       
-      // Update user stats in Firestore
       try {
-        // Ensure user document exists
         await _userService.createOrUpdateUser(userId, username);
         
-        // Get old XP to check for level up
         final oldXP = (await _userService.getUserStats(userId))?['totalXP'] ?? 0;
         
-        // Increment XP in Firestore
         await _userService.incrementUserXP(userId, widget.rating.xpEarned);
         
-        // Check if leveled up
         _checkLevelUp(oldXP, oldXP + widget.rating.xpEarned);
         
-        // Convert photo to Base64 for Firestore storage (no Firebase Storage needed)
         String? photoUrl;
         try {
           print('🔄 Converting photo to Base64...');
           if (widget.webImageBytes != null) {
-            // For web, convert bytes to base64
             final base64Image = 'data:image/jpeg;base64,${base64Encode(widget.webImageBytes!)}';
             photoUrl = base64Image;
             print('✅ Photo converted to Base64 (${widget.webImageBytes!.length} bytes)');
           } else if (widget.photoFile != null) {
-            // For mobile, read file and convert to base64
             final bytes = await widget.photoFile!.readAsBytes();
             final base64Image = 'data:image/jpeg;base64,${base64Encode(bytes)}';
             photoUrl = base64Image;
@@ -108,7 +97,6 @@ class _ResultsScreenState extends State<ResultsScreen> {
           photoUrl = null;
         }
         
-        // Post to community feed with photo URL
         try {
           print('📝 Creating feed post...');
           print('   Photo URL: ${photoUrl ?? "null (no photo uploaded)"}');
@@ -121,7 +109,6 @@ class _ResultsScreenState extends State<ResultsScreen> {
         } catch (e, stackTrace) {
           print('❌ Error creating feed post: $e');
           print('   Stack trace: $stackTrace');
-          // Don't rethrow - just log the error
         }
       } catch (e) {
         print('Error updating Firestore: $e');
@@ -143,7 +130,6 @@ class _ResultsScreenState extends State<ResultsScreen> {
           SingleChildScrollView(
             child: Column(
               children: [
-                // Photo Preview
                 Container(
                   height: 300,
                   width: double.infinity,
@@ -159,7 +145,6 @@ class _ResultsScreenState extends State<ResultsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                  // Approval Status Card
                   Card(
                     elevation: 8,
                     shape: RoundedRectangleBorder(
@@ -282,7 +267,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
                                     Icon(Icons.thumb_up, size: 16, color: Colors.green.shade600),
                                     const SizedBox(width: 4),
                                     Text(
-                                      'Likes = +5 XP',
+                                      'Likes = +20 XP',
                                       style: TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold,
@@ -293,7 +278,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
                                     Icon(Icons.thumb_down, size: 16, color: Colors.red.shade600),
                                     const SizedBox(width: 4),
                                     Text(
-                                      'Dislikes = -3 XP',
+                                      'Dislikes = -20 XP',
                                       style: TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold,
@@ -355,7 +340,6 @@ class _ResultsScreenState extends State<ResultsScreen> {
   }
 
   void _checkLevelUp(int oldXP, int newXP) {
-    // Import level service
     final oldLevel = LevelService.getLevelFromXP(oldXP);
     final newLevel = LevelService.getLevelFromXP(newXP);
     
@@ -398,7 +382,6 @@ class _ResultsScreenState extends State<ResultsScreen> {
               ),
               const SizedBox(height: 20),
               
-              // Level Up Text
               const Text(
                 '🎉 LEVEL UP! 🎉',
                 style: TextStyle(

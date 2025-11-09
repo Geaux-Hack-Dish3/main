@@ -25,10 +25,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     setState(() => _isLoading = true);
     
     try {
-      // Get leaderboard data from Firestore
       final leaderboardData = await _userService.getLeaderboard(limit: 100);
       
-      // Convert to LeaderboardEntry objects with ranks
       _entries = leaderboardData.asMap().entries.map((entry) {
         final index = entry.key;
         final data = entry.value;
@@ -130,7 +128,6 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              // Rank Badge
               Container(
                 width: 50,
                 height: 50,
@@ -153,7 +150,6 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               ),
               const SizedBox(width: 16),
               
-              // User Avatar
               CircleAvatar(
                 radius: 28,
                 backgroundColor: isTopThree ? Colors.white : Colors.green.shade700,
@@ -168,7 +164,6 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               ),
               const SizedBox(width: 16),
               
-              // User Info
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

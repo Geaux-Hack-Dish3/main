@@ -49,7 +49,7 @@ class _CommunityFeedScreenState extends State<CommunityFeedScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(isLike ? '+5 XP to ${post.username}!' : '-3 XP to ${post.username}'),
+            content: Text(isLike ? '+20 XP to ${post.username}!' : '-20 XP to ${post.username}'),
             duration: const Duration(seconds: 2),
             backgroundColor: isLike ? Colors.green : Colors.orange,
           ),

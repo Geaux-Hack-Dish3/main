@@ -69,7 +69,6 @@ class _SplashScreenState extends State<SplashScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // App Icon
               Container(
                 width: 120,
                 height: 120,
@@ -90,9 +89,8 @@ class _SplashScreenState extends State<SplashScreen> {
                   color: Colors.green.shade700,
                 ),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 32),
               
-              // App Name
               const Text(
                 'PhotoQuest',
                 style: TextStyle(
@@ -113,9 +111,8 @@ class _SplashScreenState extends State<SplashScreen> {
                   letterSpacing: 1.2,
                 ),
               ),
-              const SizedBox(height: 50),
+              const SizedBox(height: 48),
               
-              // Loading Indicator
               const CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
               ),

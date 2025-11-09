@@ -3,8 +3,6 @@ import 'login_screen.dart';
 import 'home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-
-// Wrapper to safely check login without using BuildContext across async gaps
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});
 

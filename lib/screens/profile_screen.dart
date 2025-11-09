@@ -40,17 +40,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     try {
-      // Get Firestore stats
       _userStats = await _userService.getUserStats(currentUser.uid);
       _leaderboardRank = await _userService.getUserRank(currentUser.uid);
 
-      // Get local photo history stats
       final allSubmissions = await _historyService.getHistory();
       _totalSubmissions = allSubmissions.length;
       _approvedSubmissions = allSubmissions.where((s) => s.isApproved).length;
       _rejectedSubmissions = allSubmissions.where((s) => !s.isApproved).length;
 
-      // Get current streak
       _currentStreak = await _questService.getCurrentStreak();
     } catch (e) {
       print('Error loading profile: $e');
@@ -80,7 +77,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           : SingleChildScrollView(
               child: Column(
                 children: [
-                  // Profile Header
                   Container(
                     width: double.infinity,
                     decoration: BoxDecoration(

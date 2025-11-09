@@ -1,5 +1,4 @@
 class LevelService {
-  // Level thresholds - XP required to reach each level
   static const Map<int, int> levelThresholds = {
     1: 0,
     2: 100,
@@ -33,7 +32,6 @@ class LevelService {
     30: 40800,
   };
 
-  // Level titles
   static const Map<int, String> levelTitles = {
     1: 'Outdoor Newbie',
     2: 'Nature Explorer',
@@ -67,7 +65,6 @@ class LevelService {
     30: 'Legendary Explorer',
   };
 
-  /// Calculate current level from total XP
   static int getLevelFromXP(int totalXP) {
     int level = 1;
     for (int i = 30; i >= 1; i--) {
@@ -79,26 +76,22 @@ class LevelService {
     return level;
   }
 
-  /// Get level title for given level
   static String getLevelTitle(int level) {
     return levelTitles[level] ?? 'Explorer';
   }
 
-  /// Get XP required for next level
   static int getXPForNextLevel(int currentLevel) {
     if (currentLevel >= 30) return levelThresholds[30]!;
     return levelThresholds[currentLevel + 1] ?? 0;
   }
 
-  /// Get XP required for current level
   static int getXPForCurrentLevel(int currentLevel) {
     return levelThresholds[currentLevel] ?? 0;
   }
 
-  /// Calculate progress percentage to next level
   static double getLevelProgress(int totalXP) {
     int currentLevel = getLevelFromXP(totalXP);
-    if (currentLevel >= 30) return 1.0; // Max level
+    if (currentLevel >= 30) return 1.0;
 
     int currentLevelXP = getXPForCurrentLevel(currentLevel);
     int nextLevelXP = getXPForNextLevel(currentLevel);
@@ -109,21 +102,18 @@ class LevelService {
     return xpInCurrentLevel / xpNeededForNextLevel;
   }
 
-  /// Get XP remaining to reach next level
   static int getXPToNextLevel(int totalXP) {
     int currentLevel = getLevelFromXP(totalXP);
-    if (currentLevel >= 30) return 0; // Max level
+    if (currentLevel >= 30) return 0;
     
     int nextLevelXP = getXPForNextLevel(currentLevel);
     return nextLevelXP - totalXP;
   }
 
-  /// Check if user leveled up (compare old XP to new XP)
   static bool didLevelUp(int oldXP, int newXP) {
     return getLevelFromXP(oldXP) < getLevelFromXP(newXP);
   }
 
-  /// Get reward message for reaching a level
   static String getLevelUpReward(int newLevel) {
     if (newLevel == 5) return 'Unlocked: Community Feed Access!';
     if (newLevel == 10) return 'Bonus: +50 XP for completing today\'s quests!';

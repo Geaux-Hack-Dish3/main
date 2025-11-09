@@ -44,7 +44,6 @@ class _WelcomeTutorialState extends State<WelcomeTutorial> {
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
-            // Page Indicator
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(
@@ -62,7 +61,6 @@ class _WelcomeTutorialState extends State<WelcomeTutorial> {
             ),
             const SizedBox(height: 32),
             
-            // Content
             Expanded(
               child: PageView.builder(
                 controller: _pageController,

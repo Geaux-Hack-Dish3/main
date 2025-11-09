@@ -38,7 +38,6 @@ class _LoginPageState extends State<LoginPage> {
     
     print('✅ Login successful! User: ${userCredential.user?.uid}');
     
-    // Create/update user document in Firestore
     final user = userCredential.user;
     if (user != null) {
       print('📝 Creating/updating user document...');
@@ -49,7 +48,6 @@ class _LoginPageState extends State<LoginPage> {
       print('✅ User document created');
     }
 
-    // ✅ check mounted before navigation
     if (mounted) {
       print('🏠 Navigating to home...');
       Navigator.pushReplacementNamed(context, '/home');
@@ -125,7 +123,6 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // App logo/title
                 Icon(
                   Icons.photo_camera,
                   size: 80,

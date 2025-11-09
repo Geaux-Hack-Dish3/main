@@ -58,18 +58,18 @@ app.post('/api/submissions', upload.single('photo'), async (req, res) => {
           content: [
             { 
               type: "text", 
-              text: `You are a photo verification AI for an outdoor nature app. Your job is to determine if a photo is APPROVED or REJECTED.
+              text: `You are a photo verification AI for an outdoor photo app. Your job is to determine if a photo is APPROVED or REJECTED.
 
-APPROVAL CRITERIA (ALL must be true):
-1. Photo MUST be taken outdoors (not inside buildings)
-2. Photo MUST show greenery/nature (trees, grass, plants, flowers, natural landscapes)
+APPROVAL CRITERIA:
+- Photo MUST be taken outdoors (outside of buildings)
+- Can include: nature, urban outdoors, streets, parking lots, buildings from outside, sky, water, beaches, deserts, mountains, parks, sports fields, playgrounds, etc.
+- Greenery is NOT required - any outdoor scene counts!
 
 REJECT if photo has:
-- Indoor elements (walls, ceilings, indoor furniture, artificial lighting)
-- No visible greenery or nature (urban concrete, parking lots, pure sky)
-- Screenshots, drawings, or non-photos
-- Potted plants indoors
-- Views through windows (even if outdoor scene is visible)
+- Clearly indoors (walls, ceilings, indoor furniture, indoor lighting, inside rooms)
+- Views through windows looking outside (must be taken from outside)
+- Screenshots, drawings, or non-photographs
+- Completely artificial/fake scenes
 
 Return ONLY valid JSON in this exact format:
 {
@@ -80,7 +80,7 @@ Return ONLY valid JSON in this exact format:
   "reasoning": "<1-2 sentences explaining why approved or rejected>"
 }
 
-Be strict: Both outdoor AND greenery must be present for approval.` 
+Be lenient: As long as the photo is clearly taken outdoors, approve it!` 
             },
             {
               type: "image_url",
@@ -202,9 +202,10 @@ app.delete('/api/votes', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`\n🚀 PhotoQuest Backend Server running on port ${PORT}`);
-  console.log(`📸 Ready to analyze outdoor photos with AI!\n`);
+  console.log(`📸 Ready to analyze outdoor photos with AI!`);
+  console.log(`📱 Mobile devices can connect at: http://167.96.85.57:${PORT}\n`);
   console.log(`⚠️  IMPORTANT: Move API key to .env file!`);
   console.log(`   Create .env file with: OPENAI_API_KEY=your-key\n`);
 });

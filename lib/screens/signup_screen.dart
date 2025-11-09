@@ -21,7 +21,6 @@ class _SignUpPageState extends State<SignUpPage> {
   Future<void> _signUp() async {
     if (!_formKey.currentState!.validate()) return;
 
-    // Check if passwords match
     if (_passwordController.text.trim() != _confirmPasswordController.text.trim()) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Passwords do not match')),
@@ -32,23 +31,19 @@ class _SignUpPageState extends State<SignUpPage> {
     setState(() => _isLoading = true);
 
     try {
-      // Create user with email and password
       UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
 
-      // Update display name
       final username = _usernameController.text.trim();
       await userCredential.user?.updateDisplayName(username);
       
-      // Create user document in Firestore
       await _userService.createOrUpdateUser(
         userCredential.user!.uid,
         username,
       );
 
-      // Navigate to home
       if (mounted) {
         Navigator.pushReplacementNamed(context, '/home');
       }
@@ -112,7 +107,6 @@ class _SignUpPageState extends State<SignUpPage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // App logo/title
                 Icon(
                   Icons.account_circle,
                   size: 80,
