@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:photo_quest/screens/home_screen.dart';
+import 'package:photo_quest/screens/login_screen.dart';
 import 'firebase_options.dart';
 import 'screens/splash_screen.dart';
+import 'screens/auth_wrapper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,7 +36,11 @@ class PhotoQuestApp extends StatelessWidget {
           foregroundColor: Colors.white,
         ),
       ),
-      home: const SplashScreen(),
+      home: const AuthWrapper(),
+      routes: {
+      '/home': (context) => const HomeScreen(),
+      '/login': (context) => const LoginPage(),
+      },
     );
   }
 }
