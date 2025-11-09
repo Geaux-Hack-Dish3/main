@@ -1,1 +1,47 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"photo-quest-c7c59","appId":"1:1067272827533:android:db28ca5905ca9445d0e8c4","fileOutput":"android/app/google-services.json"}},"ios":{"default":{"projectId":"photo-quest-c7c59","appId":"1:1067272827533:ios:11779c4875dd26bdd0e8c4","uploadDebugSymbols":false,"fileOutput":"ios/Runner/GoogleService-Info.plist"}},"macos":{"default":{"projectId":"photo-quest-c7c59","appId":"1:1067272827533:ios:11779c4875dd26bdd0e8c4","uploadDebugSymbols":false,"fileOutput":"macos/Runner/GoogleService-Info.plist"}},"dart":{"lib/firebase_options.dart":{"projectId":"photo-quest-c7c59","configurations":{"android":"1:1067272827533:android:db28ca5905ca9445d0e8c4","ios":"1:1067272827533:ios:11779c4875dd26bdd0e8c4","macos":"1:1067272827533:ios:11779c4875dd26bdd0e8c4","web":"1:1067272827533:web:c8301395267b9101d0e8c4","windows":"1:1067272827533:web:cd31e4a420c0dc62d0e8c4"}}}}}}
+{
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "storage": {
+    "rules": "storage.rules"
+  },
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "photo-quest-c7c59",
+          "appId": "1:1067272827533:android:db28ca5905ca9445d0e8c4",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "photo-quest-c7c59",
+          "appId": "1:1067272827533:ios:11779c4875dd26bdd0e8c4",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "macos": {
+        "default": {
+          "projectId": "photo-quest-c7c59",
+          "appId": "1:1067272827533:ios:11779c4875dd26bdd0e8c4",
+          "uploadDebugSymbols": false,
+          "fileOutput": "macos/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "photo-quest-c7c59",
+          "configurations": {
+            "android": "1:1067272827533:android:db28ca5905ca9445d0e8c4",
+            "ios": "1:1067272827533:ios:11779c4875dd26bdd0e8c4",
+            "macos": "1:1067272827533:ios:11779c4875dd26bdd0e8c4",
+            "web": "1:1067272827533:web:c8301395267b9101d0e8c4",
+            "windows": "1:1067272827533:web:cd31e4a420c0dc62d0e8c4"
+          }
+        }
+      }
+    }
+  }
+}

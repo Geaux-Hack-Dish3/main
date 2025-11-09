@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../models/quest.dart';
 import '../services/api_service.dart';
 import '../services/storage_service.dart';
@@ -96,10 +97,12 @@ class _CameraScreenState extends State<CameraScreen> {
     setState(() => _isSubmitting = true);
 
     try {
-      final userId = await _storageService.getUserId();
-      if (userId == null) {
+      // Get Firebase user ID
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
         throw Exception('User not logged in');
       }
+      final userId = currentUser.uid;
 
       // Submit photo - pass XFile for web compatibility
       final rating = await _apiService.submitPhoto(

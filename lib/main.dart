@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:photo_quest/screens/home_screen.dart';
 import 'package:photo_quest/screens/login_screen.dart';
+import 'package:photo_quest/screens/signup_screen.dart';
+import 'package:photo_quest/screens/profile_screen.dart';
+import 'package:photo_quest/screens/photo_history_screen.dart';
+import 'package:photo_quest/screens/statistics_screen.dart';
 import 'firebase_options.dart';
-import 'screens/splash_screen.dart';
 import 'screens/auth_wrapper.dart';
 
 void main() async {
@@ -38,8 +41,12 @@ class PhotoQuestApp extends StatelessWidget {
       ),
       home: const AuthWrapper(),
       routes: {
-      '/home': (context) => const HomeScreen(),
-      '/login': (context) => const LoginPage(),
+        '/home': (context) => const HomeScreen(),
+        '/login': (context) => const LoginPage(),
+        '/signup': (context) => const SignUpPage(),
+        '/profile': (context) => const ProfileScreen(),
+        '/history': (context) => const PhotoHistoryScreen(),
+        '/statistics': (context) => const StatisticsScreen(),
       },
     );
   }

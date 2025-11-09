@@ -96,16 +96,25 @@ class ApiService {
       final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);
 
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
-        return AIRating.fromJson(data['rating']);
+        if (data['rating'] != null) {
+          return AIRating.fromJson(data['rating']);
+        } else {
+          print('No rating found in response');
+          return null;
+        }
       } else {
         print('Failed to submit photo: ${response.statusCode}');
         print('Response: ${response.body}');
         return null;
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       print('Error submitting photo: $e');
+      print('Stack trace: $stackTrace');
       return null;
     }
   }

@@ -110,7 +110,7 @@ Be strict: Both outdoor AND greenery must be present for approval.`
     if (aiResponse.isApproved) {
       xpEarned = 100; // Photo approved - outdoor with greenery
     } else {
-      xpEarned = 20; // Minimal XP - indoor photo
+      xpEarned = 0; // No XP for rejected photos
     }
     
     const rating = {

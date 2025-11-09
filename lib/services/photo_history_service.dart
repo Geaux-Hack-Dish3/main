@@ -69,6 +69,12 @@ class PhotoHistoryService {
     await prefs.remove(_historyKey);
   }
 
+  // Check if a quest has an approved submission today
+  Future<bool> hasApprovedSubmissionForQuest(String questId) async {
+    final todaysSubmissions = await getTodaysSubmissions();
+    return todaysSubmissions.any((s) => s.questId == questId && s.isApproved);
+  }
+
   // Get statistics
   Future<Map<String, dynamic>> getStatistics() async {
     final history = await getHistory();

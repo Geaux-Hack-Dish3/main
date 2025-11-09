@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../services/user_service.dart';
 
 
 class LoginPage extends StatefulWidget {
@@ -13,31 +14,85 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final UserService _userService = UserService();
   bool _isLoading = false;
 
   Future<void> _login() async {
-  if (!_formKey.currentState!.validate()) return;
+  print('🔘 Login button pressed!');
+  
+  if (!_formKey.currentState!.validate()) {
+    print('❌ Form validation failed');
+    return;
+  }
 
+  print('✅ Form validated, proceeding with login...');
   setState(() => _isLoading = true);
 
   try {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
+    print('🔐 Attempting login with: ${_emailController.text.trim()}');
+    
+    final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
       email: _emailController.text.trim(),
       password: _passwordController.text.trim(),
     );
+    
+    print('✅ Login successful! User: ${userCredential.user?.uid}');
+    
+    // Create/update user document in Firestore
+    final user = userCredential.user;
+    if (user != null) {
+      print('📝 Creating/updating user document...');
+      await _userService.createOrUpdateUser(
+        user.uid,
+        user.displayName ?? 'Anonymous',
+      );
+      print('✅ User document created');
+    }
 
     // ✅ check mounted before navigation
     if (mounted) {
+      print('🏠 Navigating to home...');
       Navigator.pushReplacementNamed(context, '/home');
     }
   } on FirebaseAuthException catch (e) {
+    print('❌ Firebase Auth Error: ${e.code} - ${e.message}');
+    if (mounted) {
+      String errorMessage = 'Login failed: ';
+      switch (e.code) {
+        case 'user-not-found':
+          errorMessage += 'No account found with this email.';
+          break;
+        case 'wrong-password':
+          errorMessage += 'Incorrect password.';
+          break;
+        case 'invalid-email':
+          errorMessage += 'Invalid email address.';
+          break;
+        case 'user-disabled':
+          errorMessage += 'This account has been disabled.';
+          break;
+        default:
+          errorMessage += e.message ?? 'Unknown error';
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    }
+  } catch (e) {
+    print('❌ Unexpected error: $e');
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Login failed: ${e.message}')),
+        SnackBar(
+          content: Text('Unexpected error: $e'),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   } finally {
-    // ✅ no return here
     if (mounted) {
       setState(() => _isLoading = false);
     }
@@ -57,21 +112,51 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
+      appBar: AppBar(
+        title: const Text('Login'),
+        backgroundColor: Colors.green.shade700,
+        foregroundColor: Colors.white,
+      ),
       body: Center(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Form(
             key: _formKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                // App logo/title
+                Icon(
+                  Icons.photo_camera,
+                  size: 80,
+                  color: Colors.green.shade700,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'PhotoQuest',
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green.shade700,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Welcome back!',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+                const SizedBox(height: 32),
+
                 // Email field
                 TextFormField(
                   controller: _emailController,
                   decoration: const InputDecoration(
                     labelText: 'Email',
                     border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.email),
                   ),
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
@@ -92,6 +177,7 @@ class _LoginPageState extends State<LoginPage> {
                   decoration: const InputDecoration(
                     labelText: 'Password',
                     border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.lock),
                   ),
                   obscureText: true,
                   validator: (value) {
@@ -111,12 +197,38 @@ class _LoginPageState extends State<LoginPage> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _login,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green.shade700,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
                     child: _isLoading
                         ? const CircularProgressIndicator(
                             color: Colors.white,
                           )
-                        : const Text('Login'),
+                        : const Text('Login', style: TextStyle(fontSize: 16)),
                   ),
+                ),
+                const SizedBox(height: 16),
+
+                // Sign up link
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text("Don't have an account? "),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/signup');
+                      },
+                      child: Text(
+                        'Sign Up',
+                        style: TextStyle(
+                          color: Colors.green.shade700,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

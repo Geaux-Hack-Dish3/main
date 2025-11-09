@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../models/leaderboard_entry.dart';
-import '../services/api_service.dart';
+import '../services/user_service.dart';
 
 class LeaderboardScreen extends StatefulWidget {
   const LeaderboardScreen({super.key});
@@ -10,7 +11,7 @@ class LeaderboardScreen extends StatefulWidget {
 }
 
 class _LeaderboardScreenState extends State<LeaderboardScreen> {
-  final ApiService _apiService = ApiService();
+  final UserService _userService = UserService();
   List<LeaderboardEntry> _entries = [];
   bool _isLoading = true;
 
@@ -22,7 +23,28 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 
   Future<void> _loadLeaderboard() async {
     setState(() => _isLoading = true);
-    _entries = await _apiService.getLeaderboard(limit: 100);
+    
+    try {
+      // Get leaderboard data from Firestore
+      final leaderboardData = await _userService.getLeaderboard(limit: 100);
+      
+      // Convert to LeaderboardEntry objects with ranks
+      _entries = leaderboardData.asMap().entries.map((entry) {
+        final index = entry.key;
+        final data = entry.value;
+        return LeaderboardEntry(
+          userId: data['userId'] as String,
+          rank: index + 1,
+          username: data['username'] as String,
+          totalXp: data['totalXP'] as int,
+          questsCompleted: data['questsCompleted'] as int,
+        );
+      }).toList();
+    } catch (e) {
+      print('Error loading leaderboard: $e');
+      _entries = [];
+    }
+    
     setState(() => _isLoading = false);
   }
 
@@ -81,12 +103,17 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 
   Widget _buildLeaderboardItem(LeaderboardEntry entry, int index) {
     final isTopThree = entry.rank <= 3;
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final isCurrentUser = currentUser != null && entry.userId == currentUser.uid;
     
     return Card(
-      elevation: isTopThree ? 8 : 2,
+      elevation: isTopThree ? 8 : (isCurrentUser ? 4 : 2),
       margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
+        side: isCurrentUser 
+            ? BorderSide(color: Colors.green.shade700, width: 2)
+            : BorderSide.none,
       ),
       child: Container(
         decoration: BoxDecoration(

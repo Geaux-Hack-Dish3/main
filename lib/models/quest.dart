@@ -7,6 +7,8 @@ class Quest {
   final DateTime? endDate;
   final int xpReward;
   final bool isCompleted;
+  final String? icon;
+  final String? hint;
 
   Quest({
     required this.id,
@@ -17,6 +19,8 @@ class Quest {
     this.endDate,
     required this.xpReward,
     this.isCompleted = false,
+    this.icon,
+    this.hint,
   });
 
   factory Quest.fromJson(Map<String, dynamic> json) {
@@ -41,6 +45,7 @@ class Quest {
       'endDate': endDate?.toIso8601String(),
       'xpReward': xpReward,
       'isCompleted': isCompleted,
+      'icon': icon,
     };
   }
 
